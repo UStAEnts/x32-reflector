@@ -35,7 +35,7 @@ const CONFIG_VALIDATOR = zod.object({
         port: zod.number(),
     }),
     timeout: zod.number(),
-    siteRoot: zod.string().default('/'),
+    siteRoot: zod.string().regex(/\/$/, {message: 'Path must end in a /'}).default('/'),
 });
 type Configuration = zod.infer<typeof CONFIG_VALIDATOR>;
 
