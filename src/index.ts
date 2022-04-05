@@ -14,7 +14,7 @@ import * as zod from 'zod';
  */
 const CONFIG_PATHS: string[] = [
     os.platform() === 'linux' ? '/etc/ents/x32-reflector.json' : undefined,
-    os.platform() === 'linux' ? path.join('~', '.terminal-server.config.json') : undefined,
+    os.platform() === 'linux' ? path.join('~', '.x32-reflector.config.json') : undefined,
     path.join(__dirname, '..', 'config', 'config.json'),
 ].filter((e) => e !== undefined) as string[];
 
@@ -235,7 +235,11 @@ function index(error: string | null | undefined, res: ServerResponse) {
         .replace('{{ERROR_INSERT}}', error ? `<p id="error">${error}</p>` : '')
         .replace('{{TABLE_INSERT}}', table);
 
-    res.writeHead(constants.HTTP_STATUS_OK)
+    res.writeHead(constants.HTTP_STATUS_OK, {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    })
         .write(template)
     res.end();
 }
@@ -345,6 +349,7 @@ function handleHTTP(req: IncomingMessage, res: ServerResponse) {
     switch (lowerPath) {
         case '/register':
         case '/remove':
+        case '/renew':
             tryParseAttributes(lowerPath, parsed.searchParams, res);
             break;
         case '/':
