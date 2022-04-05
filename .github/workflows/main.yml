@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - release/**
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 15.x ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm i
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack
+        run: node node_modules/.bin/npm-pack-all --output pack/pack.tgz
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: packed-archive
+          path: pack/pack.tgz
