@@ -35,8 +35,14 @@ const CONFIG_VALIDATOR = zod.object({
         port: zod.number(),
     }),
     timeout: zod.number(),
+    siteRoot: zod.string().regex(/\/$/, {message: 'Path must end in a /'}).default('/'),
 });
 type Configuration = zod.infer<typeof CONFIG_VALIDATOR>;
+
+/**
+ * The root of the site to be used for url parsing and url generation
+ */
+let siteRoot = '/';
 
 /**
  * HTML main site template loaded from file. Content is cached so program will have to be restarted to pick up new
@@ -165,7 +171,7 @@ function register(ip: string, port: number, res: ServerResponse) {
 
     // Redirect back to index
     res.writeHead(301, {
-        Location: '/',
+        Location: siteRoot,
     }).end();
 }
 
@@ -182,7 +188,7 @@ function remove(ip: string, port: number, res: ServerResponse) {
     const index = reflectorTargets.findIndex(([i, p]) => i === ip && p === port);
     if (index === -1) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Unknown IP and Port combination')}`,
+            Location: `${siteRoot}?error=${encodeURIComponent('Unknown IP and Port combination')}`,
         }).end();
         return;
     }
@@ -190,7 +196,7 @@ function remove(ip: string, port: number, res: ServerResponse) {
     reflectorTargets.splice(index, 1);
 
     res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-        Location: '/',
+        Location: siteRoot,
     }).end();
 }
 
@@ -215,13 +221,13 @@ function index(error: string | null | undefined, res: ServerResponse) {
             <td>${ip}</td>
             <td>${port}</td>
             <td>
-                <a href="/remove?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}">Delete</a>
+                <a href="${siteRoot}remove?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}">Delete</a>
             </td>
             <td>
                 ${(timeout - (Date.now() - created)) / 1000}
             </td>
             <td>
-                <a href="/renew?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}">Renew</a>
+                <a href="${siteRoot}renew?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}">Renew</a>
             </td>
         </tr>`).join('');
 
@@ -246,7 +252,7 @@ function renew(ip: string, port: number, res: ServerResponse) {
     const index = reflectorTargets.findIndex(([i, p]) => i === ip && p === port);
     if (index === -1) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Unknown IP and Port combination')}`,
+            Location: `${siteRoot}?error=${encodeURIComponent('Unknown IP and Port combination')}`,
         }).end();
         return;
     }
@@ -254,7 +260,7 @@ function renew(ip: string, port: number, res: ServerResponse) {
     reflectorTargets[index] = [reflectorTargets[index][0], reflectorTargets[index][1], Date.now()];
 
     res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-        Location: '/',
+        Location: siteRoot,
     }).end();
 }
 
@@ -272,7 +278,7 @@ function tryParseAttributes(path: '/register' | '/remove' | '/renew', query: URL
     let ip = query.get('ip');
     if (!query.has('ip') || ip === null) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('IP address not specified')}`
+            Location: `${siteRoot}?error=${encodeURIComponent('IP address not specified')}`
         }).end();
         return;
     }
@@ -281,7 +287,7 @@ function tryParseAttributes(path: '/register' | '/remove' | '/renew', query: URL
     let num = query.get('port');
     if (!query.has('port') || num === null) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Port not specified')}`
+            Location: `${siteRoot}?error=${encodeURIComponent('Port not specified')}`
         }).end();
         return;
     }
@@ -292,7 +298,7 @@ function tryParseAttributes(path: '/register' | '/remove' | '/renew', query: URL
         port = Number(num);
     } catch (e) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Invalid port - not a number')}`
+            Location: `${siteRoot}?error=${encodeURIComponent('Invalid port - not a number')}`
         }).end();
         return;
     }
@@ -300,7 +306,7 @@ function tryParseAttributes(path: '/register' | '/remove' | '/renew', query: URL
     // Verify port is within valid range
     if (port < 1 || port > 65535) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Invalid port - out of range')}`
+            Location: `${siteRoot}?error=${encodeURIComponent('Invalid port - out of range')}`
         }).end();
         return;
     }
@@ -308,7 +314,7 @@ function tryParseAttributes(path: '/register' | '/remove' | '/renew', query: URL
     // Verify that IP address is of correct format
     if (!/^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/.test(ip)) {
         res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-            Location: `/?error=${encodeURIComponent('Invalid IP address - did not match regex')}`
+            Location: `${siteRoot}?error=${encodeURIComponent('Invalid IP address - did not match regex')}`
         }).end();
         return;
     }
@@ -361,7 +367,7 @@ loadConfiguration().then((config) => {
     // Load in the ip and port from file to overwrite the default
     X32_PORT = config.x32.port;
     X32_ADDRESS = config.x32.ip;
-
+    siteRoot = config.siteRoot;
     configuration = config;
     // Construct a HTTP server and make it listen on all interfaces on port 1325
     const httpServer = createServer(handleHTTP);
