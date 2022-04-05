@@ -232,7 +232,7 @@ function index(error: string | null | undefined, res: ServerResponse) {
         </tr>`).join('');
 
     const template = TEMPLATE
-        .replace('{{ERROR_INSERT}}', error ? `<p id="error">${error}</p>` : '')
+        .replace('{{ERROR_INSERT}}', error ? `<p class="error">${error}</p>` : '')
         .replace('{{TABLE_INSERT}}', table);
 
     res.writeHead(constants.HTTP_STATUS_OK, {
