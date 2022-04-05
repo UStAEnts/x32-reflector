@@ -52,6 +52,9 @@
         <table>
             <tr>
                 <th>
+                    <label for="device">Device</label>
+                </th>
+                <th>
                     <labeL for="ip">IP</labeL>
                 </th>
                 <th>
@@ -60,6 +63,11 @@
                 <th></th>
             </tr>
             <tr>
+                <td>
+                    <select id="device" name="device">
+                        {{DEVICES}}
+                    </select>
+                </td>
                 <td>
                     <input type="text" id="ip" name="ip"/>
                 </td>
@@ -75,16 +83,7 @@
 </div>
 
 <h2>Existing Clients</h2>
-<table>
-    <tr>
-        <th>IP Address</th>
-        <th>Port</th>
-        <th></th>
-        <th>Time Remaining (s)</th>
-        <th></th>
-    </tr>
-    {{TABLE_INSERT}}
-</table>
+{{TABLE_INSERT}}
 
 </body>
 </html>
