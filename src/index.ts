@@ -349,6 +349,7 @@ function handleHTTP(req: IncomingMessage, res: ServerResponse) {
     switch (lowerPath) {
         case '/register':
         case '/remove':
+        case '/renew':
             tryParseAttributes(lowerPath, parsed.searchParams, res);
             break;
         case '/':
