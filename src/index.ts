@@ -235,7 +235,11 @@ function index(error: string | null | undefined, res: ServerResponse) {
         .replace('{{ERROR_INSERT}}', error ? `<p id="error">${error}</p>` : '')
         .replace('{{TABLE_INSERT}}', table);
 
-    res.writeHead(constants.HTTP_STATUS_OK)
+    res.writeHead(constants.HTTP_STATUS_OK, {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    })
         .write(template)
     res.end();
 }
