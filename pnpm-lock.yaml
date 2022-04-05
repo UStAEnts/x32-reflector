@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@types/node': ^17.0.21
   minify: ^8.0.4
+  npm-pack-all: ^1.12.7
   osc: ^2.4.2
   ts-node: ^10.7.0
   typescript: ^4.6.2
@@ -15,6 +16,7 @@ dependencies:
 devDependencies:
   '@types/node': 17.0.21
   minify: 8.0.4
+  npm-pack-all: 1.12.7
   ts-node: 10.7.0_e79e62fe450383fd2d418267dc75e645
   typescript: 4.6.2
 
@@ -534,6 +536,16 @@ packages:
       semver: 7.3.5
     dev: false
     optional: true
+
+  /npm-pack-all/1.12.7:
+    resolution: {integrity: sha512-tcN3Lv4q8QI/Mbnpo73r3irYy+qkZnYwLyCzdj6w5/wGcVkkwX/I4IsVx8S5LSmTlnwNcZPvhwaFcFvrxABp3g==}
+    engines: {node: '>=6.4.0'}
+    hasBin: true
+    dev: true
+    bundledDependencies:
+      - lodash
+      - minimist
+      - shelljs
 
   /npmlog/4.1.2:
     resolution: {integrity: sha512-2uUqazuKlTaSI/dC8AzicUck7+IrEaOnN/e0jd3Xtt1KcGpwx30v50mL7oPyr/h9bL3E4aZccVwpwP+5W9Vjkg==}
