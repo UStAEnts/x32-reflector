@@ -14,7 +14,7 @@ import * as zod from 'zod';
  */
 const CONFIG_PATHS: string[] = [
     os.platform() === 'linux' ? '/etc/ents/x32-reflector.json' : undefined,
-    os.platform() === 'linux' ? path.join('~', '.terminal-server.config.json') : undefined,
+    os.platform() === 'linux' ? path.join('~', '.x32-reflector.config.json') : undefined,
     path.join(__dirname, '..', 'config', 'config.json'),
 ].filter((e) => e !== undefined) as string[];
 
