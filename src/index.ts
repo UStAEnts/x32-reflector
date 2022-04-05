@@ -34,7 +34,6 @@ type X32Instance = zod.infer<typeof X32_INSTANCE_VALIDATOR>;
 const CONFIG_VALIDATOR = zod.object({
     udp: zod.object({
         bind: zod.string(),
-        port: zod.number(),
     }),
     http: zod.object({
         bind: zod.string(),
