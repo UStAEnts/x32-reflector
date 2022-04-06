@@ -309,7 +309,7 @@ function index(error: string | null | undefined, res: ServerResponse) {
     ).join('');
 
     const template = TEMPLATE
-        .replace('{{ERROR_INSERT}}', error ? `<p id="error">${error}</p>` : '')
+        .replace('{{ERROR_INSERT}}', error ? `<p class="error">${error}</p>` : '')
         .replace('{{DEVICES}}', devices)
         .replace('{{TABLE_INSERT}}', tables.join('<hr/>'));
 
