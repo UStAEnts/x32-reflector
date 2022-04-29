@@ -25,7 +25,7 @@ const CONFIG_PATHS: string[] = [
  * Validator against the x32 instance entries in the configuration file
  */
 const X32_INSTANCE_VALIDATOR = zod.object({
-    name: zod.string(),
+    name: zod.string().regex(/^[A-Za-z0-9_-]+$/),
     ip: zod.string(),
     port: zod.number(),
 });
@@ -91,6 +91,15 @@ export async function loadConfiguration(paths: string[] = CONFIG_PATHS): Promise
             const reasons = safeParse.error.message + safeParse.error.errors.map((e) => `${e.message} (@ ${e.path.join('.')}`).join(', ');
             console.warn(`[config]: content in ${file} is not valid: ${reasons}`);
             continue;
+        }
+
+        // Last bit of validation about names
+        if (Array.isArray(safeParse.data.x32)) {
+            if (!safeParse.data.x32.map((e) => e.name).every((v, i, a) => a.indexOf(v) === i)) {
+                // If any name is not unique
+                console.warn(`[config]: config is invalid because multiple X32 instances with the same name were identified`);
+                continue;
+            }
         }
 
         console.log(`[config]: config loaded from ${file}`);
