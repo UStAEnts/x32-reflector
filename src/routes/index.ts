@@ -41,8 +41,6 @@ function handle(
     res: ServerResponse,
     error?: string,
 ) {
-    console.log('handle called');
-
     const devices = state.devices.map((device) =>
         `<option value="${device.name}">${device.name} (${device.ip}:${device.port})</option>`
     ).join('');
