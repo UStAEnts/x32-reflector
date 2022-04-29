@@ -140,21 +140,7 @@ function x32Checkin() {
     x32Devices.forEach(({socket, ip, port}) => socket.send(transmit, port, ip, logSend(ip, port)));
 }
 
-/**
- * Returns a callback function handling errors as the first parameter. In the event error is non-null it will log
- * the address it failed to forward to and error which raised the error
- * @param address the address to which this send is being made
- * @param port the port to which this send is being made
- */
-function logSend(address: string, port: number) {
-    return (error: Error | null) => {
-        if (error) {
-            console.error(`Failed to forward to address ${address}:${port}`);
-            console.error(error);
-            return;
-        }
-    }
-}
+
 
 /**
  * Directly forwards the message parameter to all ip address and port combinations defined in {@link reflectorTargets}.
