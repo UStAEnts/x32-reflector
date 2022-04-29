@@ -1,7 +1,7 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {constants} from "http2";
 
-const DEBUG_LOG = true;
+const DEBUG_LOG = (process.env.NODE_ENV ?? 'production') === 'dev';
 const d = (message: string) => DEBUG_LOG && console.log(`[router|DEBUG]: ${message}`);
 
 export type Method = 'GET' | 'POST';
