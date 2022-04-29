@@ -45,6 +45,10 @@ function promisifyBind(socket: Socket, port?: number, address?: string) {
     });
 }
 
+/**
+ * A target of a redirection containing the ip and port to which packets should be sent and the last time the device
+ * checked in which should be used to produce its cleanup time
+ */
 export type Target = {
     ip: string,
     port: number,
@@ -53,16 +57,49 @@ export type Target = {
 
 export class State {
 
-    private _config: Configuration;
-    private _targets: Record<string, Target[]>;
+    /**
+     * The configuration this state is currently running from
+     * @private
+     */
+    private readonly _config: Configuration;
+    /**
+     * The set of redirection targets. This is a mapping of x32 device names to a list of targets to which packets
+     * should be sent
+     * @private
+     */
+    private readonly _targets: Record<string, Target[]>;
+    /**
+     * The interval which is being used to manage the  checkin protocols with X32 and device cleanup. If undefined it
+     * means that no interval is currently running. See {@link launch} and ${@link stop}.
+     * @private
+     */
     private _interval: NodeJS.Timeout | undefined;
+    /**
+     * The set of devices that are currently running and 'connected' to
+     * @private
+     */
     private _devices: X32InstanceWithSocket[];
+    /**
+     * The function which should be used to create UDP sockets. This is designed to support test mocking
+     * @private
+     */
     private readonly _create: CreateSocketFunction;
 
+    /**
+     * Creates a new state object, loading the configuration via {@link loadConfiguration}. If a create function is
+     * specified, that will be used instead of the default dgram {@link createSocket} function.
+     * @param create the optional function which should be used to create UDP sockets. Defaults to dgram default
+     */
     public static async makeState(create: CreateSocketFunction = createSocket) {
         return new State(await loadConfiguration(), create);
     }
 
+    /**
+     * Creates a new state and registers all devices contained in the config. {@link launch} is not called which means
+     * this will not begin checkins
+     * @param config the configuration which should be used for this state
+     * @param create the optional function which should be used to create UDP sockets. Defaults to dgram default
+     */
     constructor(config: Configuration, create: CreateSocketFunction = createSocket) {
         this._create = create;
         this._config = config;
@@ -221,10 +258,18 @@ export class State {
         }
     }
 
+    /**
+     * Returns the configuration currently in use by this state
+     * @return the configuration in use
+     */
     get configuration() {
         return this._config;
     }
 
+    /**
+     * Returns the set of devices currently being communicated with.
+     * @return the devices curently in use, this does not include their sockets
+     */
     get devices(): X32Instance[] {
         return this._devices.map((e) => ({
             name: e.name,
@@ -233,6 +278,12 @@ export class State {
         }));
     }
 
+    /**
+     * Return this clients which are receiving redirects from the specified device. Raises an error if the device does
+     * not exist
+     * @param device the device to lookup
+     * @return a list of targets to which data is being redirected
+     */
     public clients(device: string): Target[] {
         if (this._targets[device] === undefined) throw new Error('Unknown device');
         return this._targets[device];

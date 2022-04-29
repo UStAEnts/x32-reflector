@@ -21,6 +21,9 @@ const CONFIG_PATHS: string[] = [
     path.join(__dirname, '..', '..', 'config', 'config.json'),
 ].filter((e) => e !== undefined) as string[];
 
+/**
+ * Validator against the x32 instance entries in the configuration file
+ */
 const X32_INSTANCE_VALIDATOR = zod.object({
     name: zod.string(),
     ip: zod.string(),
@@ -30,6 +33,9 @@ const X32_INSTANCE_VALIDATOR = zod.object({
  * A unique instance of X32 connections
  */
 export type X32Instance = zod.infer<typeof X32_INSTANCE_VALIDATOR>;
+/**
+ * An x32 connection item along with the socket which is bound to it and its responses
+ */
 export type X32InstanceWithSocket = X32Instance & { socket: Socket };
 /**
  * The validator for the configuration which contains udp and http bind and listen ports as well as timeouts for pairs
@@ -46,6 +52,9 @@ const CONFIG_VALIDATOR = zod.object({
     timeout: zod.number(),
     siteRoot: zod.string().regex(/\/$/, {message: 'Path must end in a /'}).default('/'),
 });
+/**
+ * The derived type of the configuration from the validator
+ */
 export type Configuration = zod.infer<typeof CONFIG_VALIDATOR>;
 
 
