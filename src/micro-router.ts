@@ -227,7 +227,7 @@ export default class MicroRouter {
         }
 
         // Reject requests immediately with an unsupported method
-        if (!SUPPORTED_METHODS.includes(req.method as any) || this._methodsInUse.has(req.method)) {
+        if (!SUPPORTED_METHODS.includes(req.method as any) || !this._methodsInUse.has(req.method)) {
             res.writeHead(constants.HTTP_STATUS_METHOD_NOT_ALLOWED).end();
             return;
         }
