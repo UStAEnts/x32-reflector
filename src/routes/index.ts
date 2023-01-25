@@ -43,13 +43,13 @@ function makeTable(state: State, device: X32Instance) {
             <td>${ip}</td>
             <td>${port}</td>
             <td>
-                <a href="/remove?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}&device=${encodeURIComponent(device.name)}">Delete</a>
+                <a href="${state.configuration.http.prefix ?? ''}/remove?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}&device=${encodeURIComponent(device.name)}">Delete</a>
             </td>
             <td>
                 ${millisToTime((timeout - (Date.now() - checkin)))}
             </td>
             <td>
-                <a href="/renew?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}&device=${encodeURIComponent(device.name)}">Renew</a>
+                <a href="${state.configuration.http.prefix ?? ''}/renew?ip=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}&device=${encodeURIComponent(device.name)}">Renew</a>
             </td>
         </tr>`).join('');
 
@@ -86,7 +86,8 @@ function handle(
     const template = TEMPLATE
         .replace('{{ERROR_INSERT}}', error ? `<p class="error">${error}</p>` : '')
         .replace('{{DEVICES}}', devices)
-        .replace('{{TABLE_INSERT}}', tables);
+        .replace('{{TABLE_INSERT}}', tables)
+        .replace('{{PREFIX}}', state.configuration.http.prefix ?? '');
 
     // And return it, forcing the page to not cache it if possible
     res.writeHead(constants.HTTP_STATUS_OK, {
@@ -104,7 +105,7 @@ export default function (state: State, router: MicroRouter) {
     router.get({
         path: /^\/?$/i,
         parseQuery: false,
-        fail: (res, code, error) => fail(res, error),
+        fail: (res, code, error) => fail(res, error, state.configuration),
         handle: ((path, query, res, req) => {
             handle(
                 state,

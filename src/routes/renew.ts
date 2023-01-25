@@ -19,9 +19,9 @@ function handle(
             port,
         );
 
-        succeed(res);
+        succeed(res, state.configuration);
     } catch (e: any) {
-        fail(res, e.message);
+        fail(res, e.message, state.configuration);
     }
 }
 
@@ -34,7 +34,7 @@ export default function (state: State, router: MicroRouter) {
             {name: 'port', required: true, error: 'Port must be a number', validator: (t) => !isNaN(Number(t))},
             {name: 'device', required: true, error: 'Device name require', validator: (t) => /^[A-Za-z]+$/.test(t)},
         ],
-        fail: (res, code, error) => fail(res, error),
+        fail: (res, code, error) => fail(res, error, state.configuration),
         handle: ((path, query, res, req) => {
             handle(
                 state,

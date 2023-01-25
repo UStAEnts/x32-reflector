@@ -47,6 +47,7 @@ const CONFIG_VALIDATOR = zod.object({
     http: zod.object({
         bind: zod.string(),
         port: zod.number(),
+        prefix: zod.string().optional(),
     }),
     x32: X32_INSTANCE_VALIDATOR.or(zod.array(X32_INSTANCE_VALIDATOR)),
     timeout: zod.number(),

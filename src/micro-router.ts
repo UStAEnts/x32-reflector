@@ -1,5 +1,6 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {constants} from "http2";
+import { Configuration } from "./config/configuration";
 
 /**
  * If additional debugging messages should be logged for interactions with the HTTP server
@@ -141,16 +142,16 @@ type InternalRoute = Route & { method: Method };
  * @param res the response on which results should be written
  * @param error the error which should be included in the request
  */
-export const fail = (res: ServerResponse, error: string) => res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-    Location: `/?error=${encodeURIComponent(error)}`
+export const fail = (res: ServerResponse, error: string, config: Configuration) => res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
+    Location: `${config.http.prefix ?? ''}/?error=${encodeURIComponent(error)}`
 }).end();
 
 /**
  * A utility function which succeeds a request by redirecting it to / without an error parameter
  * @param res the response on which the redirect should be written
  */
-export const succeed = (res: ServerResponse) => res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
-    Location: `/`
+export const succeed = (res: ServerResponse, config: Configuration) => res.writeHead(constants.HTTP_STATUS_TEMPORARY_REDIRECT, {
+    Location: `${config.http.prefix ?? ''}/`
 }).end();
 
 /**
