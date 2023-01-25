@@ -5,6 +5,8 @@ import {Socket} from "dgram";
 import {promises as fsp} from "fs";
 import fs from "fs";
 
+export const DEVICE_NAME_REGEX = /^[A-Za-z0-9_-]+$/;
+
 /**
  * HTML main site template loaded from file. Content is cached so program will have to be restarted to pick up new
  * changes in the file
@@ -25,7 +27,7 @@ const CONFIG_PATHS: string[] = [
  * Validator against the x32 instance entries in the configuration file
  */
 const X32_INSTANCE_VALIDATOR = zod.object({
-    name: zod.string().regex(/^[A-Za-z0-9_-]+$/),
+    name: zod.string().regex(DEVICE_NAME_REGEX),
     ip: zod.string(),
     port: zod.number(),
 });
